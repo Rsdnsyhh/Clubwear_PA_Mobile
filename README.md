@@ -1,20 +1,21 @@
 # Clubwear - Proyek Akhir Pemrograman Piranti Bergerak
 
-Aplikasi toko pakaian pria (Flutter + Provider).
+Aplikasi toko pakaian pria
 
 ## Cara menjalankan
+
 ```bash
-cd clubwear_app
-flutter create .        # sekali saja, membuat folder android/ web/ dll
+cd nama_folder
 flutter pub get
-flutter run -d chrome
+flutter run
 ```
 
 ## Struktur
+
 ```
 clubwear_app/
 ├── pubspec.yaml
-├── assets/images/                  # foto produk p01.jpg ... p21.jpg
+├── assets/images/                  # foto produk p01.jpg ... p35.jpg
 └── lib/
     ├── main.dart                   # MaterialApp + tema + ChangeNotifierProvider
     ├── models/
@@ -39,12 +40,14 @@ clubwear_app/
         └── common_widgets.dart     # AppColors, PrimaryButton, AppTextField, EmptyState, dll
 ```
 
-## Perbaikan dari aslab
+## Perbaikan
+
 1. Pop up pilih ukuran: `widgets/size_picker_dialog.dart`, dipanggil dari tombol "+" di `product_card.dart`.
 2. Setelah daftar kembali ke login: `register_page.dart` memanggil `Navigator.pop(context, email)`;
    `login_page.dart` (`_goToRegister`) mengisi email otomatis dan menampilkan SnackBar sukses.
 
-## Fitur tambahan (v2)
+## Fitur tambahan
+
 - Halaman detail produk (ketuk kartu): pilih ukuran, jumlah, deskripsi, info stok menipis.
 - Urutkan produk di beranda: harga terendah/tertinggi, terlaris, rating.
 - Stok membatasi jumlah beli (contoh: Contrast Printed T-Shirt stok 3).
