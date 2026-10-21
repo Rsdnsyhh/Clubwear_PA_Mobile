@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import '../providers/clubwear_provider.dart';
 import '../widgets/common_widgets.dart';
 
 class RegisterPage extends StatefulWidget {
@@ -30,8 +29,10 @@ class _RegisterPageState extends State<RegisterPage> {
     super.dispose();
   }
 
+// Mendaftarkan akun baru melalui Firebase Authentication.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
     FocusScope.of(context).unfocus();
 
     setState(() {
@@ -39,47 +40,86 @@ class _RegisterPageState extends State<RegisterPage> {
       _error = null;
     });
 
-    await Future<void>.delayed(const Duration(milliseconds: 800));
-    if (!mounted) return;
+    try {
+      final credential =
+          await FirebaseAuth.instance.createUserWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
-    final email = _emailController.text.trim();
-    final error = context.read<ClubwearProvider>().register(
-      name: _nameController.text,
-      email: email,
-      password: _passwordController.text,
-    );
+      await credential.user?.updateDisplayName(
+        _nameController.text.trim(),
+      );
 
-    if (error != null) {
+      if (!mounted) return;
+
+// Kembali ke login dan mengirimkan email yang baru didaftarkan.
+      Navigator.of(context).pop(_emailController.text.trim());
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      String message;
+
+      switch (e.code) {
+        case 'email-already-in-use':
+          message = 'Email sudah terdaftar. Silakan masuk.';
+          break;
+        case 'invalid-email':
+          message = 'Format email tidak valid.';
+          break;
+        case 'weak-password':
+          message = 'Password terlalu lemah. Minimal 6 karakter.';
+          break;
+        case 'network-request-failed':
+          message = 'Koneksi internet bermasalah. Coba lagi.';
+          break;
+        case 'too-many-requests':
+          message = 'Terlalu banyak percobaan. Coba lagi nanti.';
+          break;
+        default:
+          message = e.message ?? 'Pendaftaran gagal. Coba lagi.';
+      }
+
       setState(() {
         _loading = false;
-        _error = error;
+        _error = message;
       });
-      return;
-    }
+    } catch (e) {
+      if (!mounted) return;
 
-    // Berhasil: kembali ke halaman login sambil mengirim email yang didaftarkan.
-    Navigator.of(context).pop(email);
+      setState(() {
+        _loading = false;
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      });
+    }
   }
 
   @override
   Widget build(BuildContext context) {
     return AuthScaffold(
-      showBack: true,
-      title: 'Buat akun\nbaru.',
-      subtitle: 'Daftar untuk mulai belanja outfit favoritmu.',
+      title: 'Buat akun\nClubwear.',
+      subtitle: 'Daftar untuk mulai berbelanja di Clubwear.',
       child: Form(
         key: _formKey,
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+// Input nama lengkap pengguna.
             AppTextField(
               controller: _nameController,
-              hint: 'Nama lengkap',
+              hint: 'Nama Lengkap',
               icon: Icons.person_outline,
               textInputAction: TextInputAction.next,
-              validator: (v) => Validators.notEmpty(v, 'Nama'),
+              validator: (value) {
+                if (value == null || value.trim().isEmpty) {
+                  return 'Nama lengkap wajib diisi.';
+                }
+                return null;
+              },
             ),
             const SizedBox(height: 14),
+
+// Input email pengguna.
             AppTextField(
               controller: _emailController,
               hint: 'Email',
@@ -89,6 +129,8 @@ class _RegisterPageState extends State<RegisterPage> {
               validator: Validators.email,
             ),
             const SizedBox(height: 14),
+
+// Input password akun.
             AppTextField(
               controller: _passwordController,
               hint: 'Password',
@@ -98,22 +140,37 @@ class _RegisterPageState extends State<RegisterPage> {
               validator: Validators.password,
             ),
             const SizedBox(height: 14),
+
+// Memastikan konfirmasi password sesuai.
             AppTextField(
               controller: _confirmController,
-              hint: 'Konfirmasi password',
-              icon: Icons.lock_outline,
+              hint: 'Konfirmasi Password',
+              icon: Icons.lock_reset,
               isPassword: true,
               textInputAction: TextInputAction.done,
-              validator: (v) =>
-                  Validators.confirmPassword(v, _passwordController.text),
+              validator: (value) {
+                if (value == null || value.isEmpty) {
+                  return 'Konfirmasi password wajib diisi.';
+                }
+                if (value != _passwordController.text) {
+                  return 'Password tidak sama.';
+                }
+                return null;
+              },
               onSubmitted: (_) => _submit(),
             ),
+
+// Pesan kesalahan pendaftaran.
             if (_error != null) ...[
               const SizedBox(height: 12),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.error_outline,
-                      size: 16, color: AppColors.accent),
+                  const Icon(
+                    Icons.error_outline,
+                    size: 16,
+                    color: AppColors.accent,
+                  ),
                   const SizedBox(width: 6),
                   Expanded(
                     child: Text(
@@ -127,20 +184,27 @@ class _RegisterPageState extends State<RegisterPage> {
                 ],
               ),
             ],
+
             const SizedBox(height: 24),
+
+// Tombol pendaftaran dengan desain yang sama seperti login.
             PrimaryButton(
               label: 'Daftar',
               isLoading: _loading,
               onPressed: _submit,
             ),
             const SizedBox(height: 10),
+
+// Kembali ke halaman login.
             Center(
               child: TextButton(
-                onPressed: () => Navigator.of(context).pop(),
+                onPressed: _loading ? null : () => Navigator.of(context).pop(),
                 child: const Text.rich(
                   TextSpan(
                     text: 'Sudah punya akun? ',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                    ),
                     children: [
                       TextSpan(
                         text: 'Masuk',

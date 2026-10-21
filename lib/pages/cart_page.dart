@@ -1,3 +1,4 @@
+
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
@@ -13,15 +14,20 @@ import 'profile_page.dart';
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
+  // Memproses checkout dan menyimpan pesanan ke Firestore.
   Future<void> _checkout(
-      BuildContext context, ClubwearProvider provider) async {
-    // Alamat wajib diisi sebelum checkout.
+      BuildContext context,
+      ClubwearProvider provider,
+      ) async {
     if (!provider.hasAddress) {
       final fillNow = await showDialog<bool>(
         context: context,
         builder: (ctx) => AlertDialog(
-          icon: const Icon(Icons.location_off_outlined,
-              size: 32, color: AppColors.accent),
+          icon: const Icon(
+            Icons.location_off_outlined,
+            size: 32,
+            color: AppColors.accent,
+          ),
           title: const Text('Alamat belum diisi'),
           content: const Text(
             'Isi alamat pengiriman terlebih dahulu sebelum melakukan checkout.',
@@ -47,15 +53,32 @@ class CartPage extends StatelessWidget {
       return;
     }
 
-    final order = provider.placeOrder();
-    if (order == null) return;
+    try {
+      final order = await provider.placeOrder();
 
-    if (!context.mounted) return;
-    Navigator.of(context).push(
-      MaterialPageRoute<void>(
-        builder: (_) => OrderDetailPage(order: order, justOrdered: true),
-      ),
-    );
+      if (!context.mounted || order == null) return;
+
+      Navigator.of(context).push(
+        MaterialPageRoute<void>(
+          builder: (_) => OrderDetailPage(
+            order: order,
+            justOrdered: true,
+          ),
+        ),
+      );
+    } catch (error, stackTrace) {
+      debugPrint('ERROR CHECKOUT: $error');
+      debugPrintStack(stackTrace: stackTrace);
+
+      if (!context.mounted) return;
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Gagal menyimpan pesanan: $error'),
+          duration: const Duration(seconds: 8),
+        ),
+      );
+    }
   }
 
   @override
@@ -82,26 +105,36 @@ class CartPage extends StatelessWidget {
                     ? EmptyState(
                   icon: Icons.shopping_bag_outlined,
                   title: 'Keranjangmu masih kosong',
-                  subtitle: 'Yuk, temukan outfit favoritmu di Clubwear.',
+                  subtitle:
+                  'Yuk, temukan outfit favoritmu di Clubwear.',
                   actionLabel: 'Mulai Belanja',
                   onAction: () => provider.setTab(0),
                 )
                     : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(16, 18, 16, 16),
-                  // item pertama = kartu progress gratis ongkir
+                  padding: const EdgeInsets.fromLTRB(
+                    16,
+                    18,
+                    16,
+                    16,
+                  ),
                   itemCount: items.length + 1,
-                  separatorBuilder: (_, __) => const SizedBox(height: 12),
+                  separatorBuilder: (_, __) =>
+                  const SizedBox(height: 12),
                   itemBuilder: (_, i) {
                     if (i == 0) {
-                      return _ShippingProgress(provider: provider);
+                      return _ShippingProgress(
+                        provider: provider,
+                      );
                     }
 
                     final item = items[i - 1];
+
                     return Dismissible(
                       key: ValueKey(item.key),
                       direction: DismissDirection.endToStart,
-                      onDismissed: (_) =>
-                          provider.removeFromCart(item.key),
+                      onDismissed: (_) {
+                        provider.removeFromCart(item.key);
+                      },
                       background: const SizedBox.shrink(),
                       secondaryBackground: Container(
                         alignment: Alignment.centerRight,
@@ -110,8 +143,10 @@ class CartPage extends StatelessWidget {
                           color: AppColors.accent,
                           borderRadius: BorderRadius.circular(18),
                         ),
-                        child: const Icon(Icons.delete_outline,
-                            color: Colors.white),
+                        child: const Icon(
+                          Icons.delete_outline,
+                          color: Colors.white,
+                        ),
                       ),
                       child: _CartItemTile(item: item),
                     );
@@ -131,6 +166,7 @@ class CartPage extends StatelessWidget {
   }
 }
 
+// Widget progress gratis ongkir.
 class _ShippingProgress extends StatelessWidget {
   const _ShippingProgress({required this.provider});
 
@@ -154,9 +190,11 @@ class _ShippingProgress extends StatelessWidget {
           Row(
             children: [
               Icon(
-                unlocked ? Icons.local_shipping : Icons.local_shipping_outlined,
+                unlocked
+                    ? Icons.local_shipping
+                    : Icons.local_shipping_outlined,
                 size: 20,
-                color: unlocked ? AppColors.primary : AppColors.gold
+                color: unlocked ? AppColors.primary : AppColors.gold,
               ),
               const SizedBox(width: 10),
               Expanded(
@@ -188,6 +226,7 @@ class _ShippingProgress extends StatelessWidget {
   }
 }
 
+// Widget satu produk di keranjang.
 class _CartItemTile extends StatelessWidget {
   const _CartItemTile({required this.item});
 
@@ -235,8 +274,11 @@ class _CartItemTile extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                       child: const Padding(
                         padding: EdgeInsets.all(2),
-                        child: Icon(Icons.delete_outline,
-                            size: 20, color: AppColors.textSecondary),
+                        child: Icon(
+                          Icons.delete_outline,
+                          size: 20,
+                          color: AppColors.textSecondary,
+                        ),
                       ),
                     ),
                   ],
@@ -263,8 +305,10 @@ class _CartItemTile extends StatelessWidget {
                     QuantityStepper(
                       quantity: item.quantity,
                       maxQuantity: provider.maxQuantityFor(item.product),
-                      onIncrement: () => provider.increaseQuantity(item.key),
-                      onDecrement: () => provider.decreaseQuantity(item.key),
+                      onIncrement: () =>
+                          provider.increaseQuantity(item.key),
+                      onDecrement: () =>
+                          provider.decreaseQuantity(item.key),
                     ),
                     const Spacer(),
                     if (item.quantity > 1)
@@ -286,8 +330,12 @@ class _CartItemTile extends StatelessWidget {
   }
 }
 
+// Widget ringkasan belanja dan tombol checkout.
 class _SummaryBar extends StatelessWidget {
-  const _SummaryBar({required this.provider, required this.onCheckout});
+  const _SummaryBar({
+    required this.provider,
+    required this.onCheckout,
+  });
 
   final ClubwearProvider provider;
   final VoidCallback onCheckout;
@@ -300,12 +348,17 @@ class _SummaryBar extends StatelessWidget {
           Text(
             label,
             style: const TextStyle(
-                fontSize: 12.5, color: AppColors.textSecondary),
+              fontSize: 12.5,
+              color: AppColors.textSecondary,
+            ),
           ),
           const Spacer(),
           Text(
             value,
-            style: const TextStyle(fontSize: 12.5, fontWeight: FontWeight.w500),
+            style: const TextStyle(
+              fontSize: 12.5,
+              fontWeight: FontWeight.w500,
+            ),
           ),
         ],
       ),
@@ -343,7 +396,9 @@ class _SummaryBar extends StatelessWidget {
                         ? Icons.location_on_outlined
                         : Icons.warning_amber_rounded,
                     size: 18,
-                    color: hasAddress ? AppColors.primary : AppColors.accent,
+                    color: hasAddress
+                        ? AppColors.primary
+                        : AppColors.accent,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -355,10 +410,12 @@ class _SummaryBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12.5,
-                        color:
-                        hasAddress ? AppColors.primary : AppColors.accent,
-                        fontWeight:
-                        hasAddress ? FontWeight.w400 : FontWeight.w600,
+                        color: hasAddress
+                            ? AppColors.primary
+                            : AppColors.accent,
+                        fontWeight: hasAddress
+                            ? FontWeight.w400
+                            : FontWeight.w600,
                       ),
                     ),
                   ),
@@ -374,11 +431,15 @@ class _SummaryBar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
-          _row('Subtotal (${provider.cartCount} barang)',
-              formatRupiah(provider.cartTotal)),
+          _row(
+            'Subtotal (${provider.cartCount} barang)',
+            formatRupiah(provider.cartTotal),
+          ),
           _row(
             'Ongkos kirim',
-            provider.shipping == 0 ? 'Gratis' : formatRupiah(provider.shipping),
+            provider.shipping == 0
+                ? 'Gratis'
+                : formatRupiah(provider.shipping),
           ),
           const SizedBox(height: 8),
           Row(
@@ -397,7 +458,9 @@ class _SummaryBar extends StatelessWidget {
                   Text(
                     formatRupiah(provider.grandTotal),
                     style: const TextStyle(
-                        fontSize: 18, fontWeight: FontWeight.w700),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w700,
+                    ),
                   ),
                 ],
               ),

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:provider/provider.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 
-import '../providers/clubwear_provider.dart';
+
 import '../widgets/common_widgets.dart';
 import 'main_nav_page.dart';
 import 'register_page.dart';
@@ -28,8 +28,10 @@ class _LoginPageState extends State<LoginPage> {
     super.dispose();
   }
 
+// Login menggunakan Firebase Authentication.
   Future<void> _submit() async {
     if (!_formKey.currentState!.validate()) return;
+
     FocusScope.of(context).unfocus();
 
     setState(() {
@@ -37,31 +39,68 @@ class _LoginPageState extends State<LoginPage> {
       _error = null;
     });
 
-    await Future<void>.delayed(const Duration(milliseconds: 700));
-    if (!mounted) return;
+    try {
+      await FirebaseAuth.instance.signInWithEmailAndPassword(
+        email: _emailController.text.trim(),
+        password: _passwordController.text,
+      );
 
-    final error = context
-        .read<ClubwearProvider>()
-        .login(_emailController.text, _passwordController.text);
+      if (!mounted) return;
 
-    if (error != null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute<void>(
+          builder: (_) => const MainNavPage(),
+        ),
+      );
+    } on FirebaseAuthException catch (e) {
+      if (!mounted) return;
+
+      String message;
+
+      switch (e.code) {
+        case 'invalid-email':
+          message = 'Format email tidak valid.';
+          break;
+        case 'user-not-found':
+        case 'invalid-credential':
+          message = 'Email atau password salah.';
+          break;
+        case 'wrong-password':
+          message = 'Password yang kamu masukkan salah.';
+          break;
+        case 'user-disabled':
+          message = 'Akun ini telah dinonaktifkan.';
+          break;
+        case 'too-many-requests':
+          message = 'Terlalu banyak percobaan. Coba lagi nanti.';
+          break;
+        case 'network-request-failed':
+          message = 'Koneksi internet bermasalah. Coba lagi.';
+          break;
+        default:
+          message = e.message ?? 'Login gagal. Silakan coba lagi.';
+      }
+
       setState(() {
         _loading = false;
-        _error = error;
+        _error = message;
       });
-      return;
-    }
+    } catch (e) {
+      if (!mounted) return;
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute<void>(builder: (_) => const MainNavPage()),
-    );
+      setState(() {
+        _loading = false;
+        _error = 'Terjadi kesalahan. Silakan coba lagi.';
+      });
+    }
   }
 
-  /// Setelah daftar berhasil, RegisterPage menutup dirinya (pop) dan mengirim
-  /// email balik -> user kembali ke login dengan email terisi otomatis.
+// Membuka halaman register dan mengisi email setelah pendaftaran.
   Future<void> _goToRegister() async {
     final registeredEmail = await Navigator.of(context).push<String>(
-      MaterialPageRoute<String>(builder: (_) => const RegisterPage()),
+      MaterialPageRoute<String>(
+        builder: (_) => const RegisterPage(),
+      ),
     );
 
     if (registeredEmail == null || !mounted) return;
@@ -75,7 +114,9 @@ class _LoginPageState extends State<LoginPage> {
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
       ..showSnackBar(
-        const SnackBar(content: Text('Akun berhasil dibuat. Silakan masuk.')),
+        const SnackBar(
+          content: Text('Akun berhasil dibuat. Silakan masuk.'),
+        ),
       );
   }
 
@@ -110,15 +151,21 @@ class _LoginPageState extends State<LoginPage> {
             if (_error != null) ...[
               const SizedBox(height: 12),
               Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Icon(Icons.error_outline,
-                      size: 16, color: AppColors.accent),
+                  const Icon(
+                    Icons.error_outline,
+                    size: 16,
+                    color: AppColors.accent,
+                  ),
                   const SizedBox(width: 6),
-                  Text(
-                    _error!,
-                    style: const TextStyle(
-                      fontSize: 12.5,
-                      color: AppColors.accent,
+                  Expanded(
+                    child: Text(
+                      _error!,
+                      style: const TextStyle(
+                        fontSize: 12.5,
+                        color: AppColors.accent,
+                      ),
                     ),
                   ),
                 ],
@@ -133,11 +180,13 @@ class _LoginPageState extends State<LoginPage> {
             const SizedBox(height: 10),
             Center(
               child: TextButton(
-                onPressed: _goToRegister,
+                onPressed: _loading ? null : _goToRegister,
                 child: const Text.rich(
                   TextSpan(
                     text: 'Belum punya akun? ',
-                    style: TextStyle(color: AppColors.textSecondary),
+                    style: TextStyle(
+                      color: AppColors.textSecondary,
+                    ),
                     children: [
                       TextSpan(
                         text: 'Daftar',
@@ -157,17 +206,23 @@ class _LoginPageState extends State<LoginPage> {
               decoration: BoxDecoration(
                 color: AppColors.gold.withValues(alpha: 0.12),
                 borderRadius: BorderRadius.circular(16),
-                border: Border.all(color: AppColors.gold.withValues(alpha: 0.4)),
+                border: Border.all(
+                  color: AppColors.gold.withValues(alpha: 0.4),
+                ),
               ),
               child: const Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Icon(Icons.info_outline, size: 20, color: AppColors.gold),
+                  Icon(
+                    Icons.info_outline,
+                    size: 20,
+                    color: AppColors.gold,
+                  ),
                   SizedBox(width: 12),
                   Expanded(
                     child: Text(
-                      'Mode demo: data disimpan lokal. Masuk dengan '
-                          'email apa saja (password min. 6 karakter).',
+                      'Login menggunakan Firebase Authentication. '
+                      'Gunakan email dan password yang sudah didaftarkan.',
                       style: TextStyle(
                         fontSize: 12,
                         height: 1.4,

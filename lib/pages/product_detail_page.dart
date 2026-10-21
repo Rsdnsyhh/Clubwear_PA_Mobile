@@ -29,6 +29,8 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
   }
 
   void _addToCart() {
+    debugPrint('TEST: fungsi tambah keranjang dijalankan');
+
     final size = _size;
     if (size == null) return;
 

@@ -1,11 +1,23 @@
+
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:firebase_core/firebase_core.dart';
 
+import 'firebase_options.dart';
 import 'pages/splash_page.dart';
 import 'providers/clubwear_provider.dart';
 import 'widgets/common_widgets.dart';
 
-void main() {
+Future<void> main() async {
+  // Menyiapkan Flutter sebelum Firebase diinisialisasi.
+  WidgetsFlutterBinding.ensureInitialized();
+
+  // Menghubungkan aplikasi dengan proyek Firebase Clubwear.
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
+  // Menjalankan aplikasi setelah Firebase siap.
   runApp(const ClubwearApp());
 }
 
@@ -35,7 +47,9 @@ class ClubwearApp extends StatelessWidget {
         debugShowCheckedModeBanner: false,
         theme: base.copyWith(
           scaffoldBackgroundColor: AppColors.background,
-          iconTheme: const IconThemeData(color: AppColors.primary),
+          iconTheme: const IconThemeData(
+            color: AppColors.primary,
+          ),
           textTheme: base.textTheme.apply(
             bodyColor: AppColors.primary,
             displayColor: AppColors.primary,
@@ -50,15 +64,19 @@ class ClubwearApp extends StatelessWidget {
             behavior: SnackBarBehavior.floating,
             backgroundColor: AppColors.primary,
             actionTextColor: AppColors.gold,
-            contentTextStyle:
-            const TextStyle(color: Colors.white, fontSize: 13),
-            shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(14)),
+            contentTextStyle: const TextStyle(
+              color: Colors.white,
+              fontSize: 13,
+            ),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(14),
+            ),
           ),
           dialogTheme: DialogThemeData(
             backgroundColor: Colors.white,
-            shape:
-            RoundedRectangleBorder(borderRadius: BorderRadius.circular(24)),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(24),
+            ),
           ),
         ),
         home: const SplashPage(),
