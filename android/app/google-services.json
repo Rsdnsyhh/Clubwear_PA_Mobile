@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "531757460421",
+    "project_id": "clubwear-ff4f6",
+    "storage_bucket": "clubwear-ff4f6.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:531757460421:android:0e381e2c66e64c5207b9ac",
+        "android_client_info": {
+          "package_name": "com.example.clubwear"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCJyhNHDb5-eo0POeaEzUKakUzjDptBdFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
