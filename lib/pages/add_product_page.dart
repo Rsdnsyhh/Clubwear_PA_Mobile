@@ -105,16 +105,21 @@ class _AddProductPageState extends State<AddProductPage> {
         );
         await service.updateProduct(updated);
       } else {
-        await service.addProduct(
+        // PERBAIKAN: Buat objek Product terlebih dahulu sebelum dikirim ke addProduct
+        final newProduct = Product(
+          id: '',
           name: _nameController.text.trim(),
           category: _category,
           price: price,
           originalPrice: originalPrice,
+          sold: 0,
           stock: stock,
-          sizes: sizes,
-          image: _imageController.text.trim(),
           isNew: _isNew,
+          sizes: sizes,
+          color: const Color(0xFFE0E0E0),
+          image: _imageController.text.trim(),
         );
+        await service.addProduct(newProduct);
       }
 
       if (!mounted) return;

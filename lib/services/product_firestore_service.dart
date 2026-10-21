@@ -6,8 +6,64 @@ import '../models/product.dart';
 class ProductFirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
+  // 1. Tambah 1 Produk Baru
+  Future<void> addProduct(Product product) async {
+    final docRef = _db.collection('products').doc();
+    await docRef.set({
+      'name': product.name,
+      'category': product.category.name,
+      'price': product.price,
+      'originalPrice': product.originalPrice,
+      'sold': product.sold,
+      'stock': product.stock,
+      'isNew': product.isNew,
+      'image': product.image,
+      'sizes': product.sizes,
+      'color': product.color.toARGB32(),
+    });
+  }
+
+  // 2. Update Produk
+  Future<void> updateProduct(Product product) async {
+    await _db.collection('products').doc(product.id).update({
+      'name': product.name,
+      'category': product.category.name,
+      'price': product.price,
+      'originalPrice': product.originalPrice,
+      'sold': product.sold,
+      'stock': product.stock,
+      'isNew': product.isNew,
+      'image': product.image,
+      'sizes': product.sizes,
+      'color': product.color.toARGB32(),
+    });
+  }
+
+  // 3. Hapus Produk
+  Future<void> deleteProduct(String productId) async {
+    await _db.collection('products').doc(productId).delete();
+  }
+
+  // 4. Update Stok & Jumlah Terjual
+  Future<void> incrementSoldAndDecreaseStock(String productId, int quantity) async {
+    final docRef = _db.collection('products').doc(productId);
+
+    await _db.runTransaction((transaction) async {
+      final snapshot = await transaction.get(docRef);
+
+      if (snapshot.exists) {
+        final currentStock = (snapshot.data()?['stock'] as num?)?.toInt() ?? 0;
+        final currentSold = (snapshot.data()?['sold'] as num?)?.toInt() ?? 0;
+
+        transaction.update(docRef, {
+          'stock': currentStock - quantity,
+          'sold': currentSold + quantity,
+        });
+      }
+    });
+  }
+
   // Mengunggah produk lokal ke Firestore.
-  // Data yang sudah ada dapat diperbarui.
   Future<void> uploadProducts(List<Product> products) async {
     final batch = _db.batch();
 
@@ -32,7 +88,6 @@ class ProductFirestoreService {
   }
 
   // Menambahkan hanya produk yang belum ada di Firestore.
-  // Produk yang sudah ada tidak ditimpa.
   Future<int> syncMissingProducts(List<Product> products) async {
     final collection = _db.collection('products');
     final batch = _db.batch();
