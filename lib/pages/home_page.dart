@@ -12,11 +12,10 @@ enum SortOption {
   rekomendasi('Rekomendasi'),
   termurah('Harga terendah'),
   termahal('Harga tertinggi'),
-  terlaris('Terlaris'),
-  rating('Rating tertinggi');
+  terlaris('Terlaris');
+  // rating('Rating tertinggi'), ← HAPUS
 
   const SortOption(this.label);
-
   final String label;
 }
 
@@ -61,8 +60,7 @@ class _HomePageState extends State<HomePage> {
         list.sort((a, b) => b.price.compareTo(a.price));
       case SortOption.terlaris:
         list.sort((a, b) => b.sold.compareTo(a.sold));
-      case SortOption.rating:
-        list.sort((a, b) => b.rating.compareTo(a.rating));
+
     }
     return list;
   }
@@ -70,7 +68,7 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     final products =
-    _sorted(_filter(context.read<ClubwearProvider>().products));
+    _sorted(_filter(context.watch<ClubwearProvider>().products));
 
     return CustomScrollView(
       slivers: [

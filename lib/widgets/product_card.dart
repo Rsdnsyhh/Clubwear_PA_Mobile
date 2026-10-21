@@ -103,12 +103,11 @@ class ProductCard extends StatelessWidget {
                       const SizedBox(height: 4),
                       Row(
                         children: [
-                          const Icon(Icons.star_rounded,
-                              size: 14, color: AppColors.star),
+                          const Icon(Icons.star_rounded, size: 14, color: AppColors.star),
                           const SizedBox(width: 3),
                           Expanded(
                             child: Text(
-                              '${product.rating} • ${product.sold} terjual',
+                              'Terjual ${product.sold}  •  Stok ${product.stock}',
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: const TextStyle(

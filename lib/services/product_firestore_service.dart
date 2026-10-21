@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 
@@ -8,7 +7,7 @@ class ProductFirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
   // Mengunggah produk lokal ke Firestore.
-  // Fungsi ini tetap dipertahankan untuk kebutuhan lama.
+  // Data yang sudah ada dapat diperbarui.
   Future<void> uploadProducts(List<Product> products) async {
     final batch = _db.batch();
 
@@ -20,7 +19,6 @@ class ProductFirestoreService {
         'category': product.category.name,
         'price': product.price,
         'originalPrice': product.originalPrice,
-        'rating': product.rating,
         'sold': product.sold,
         'stock': product.stock,
         'isNew': product.isNew,
@@ -34,7 +32,7 @@ class ProductFirestoreService {
   }
 
   // Menambahkan hanya produk yang belum ada di Firestore.
-  // Data produk yang sudah ada tidak akan ditimpa.
+  // Produk yang sudah ada tidak ditimpa.
   Future<int> syncMissingProducts(List<Product> products) async {
     final collection = _db.collection('products');
     final batch = _db.batch();
@@ -50,7 +48,6 @@ class ProductFirestoreService {
           'category': product.category.name,
           'price': product.price,
           'originalPrice': product.originalPrice,
-          'rating': product.rating,
           'sold': product.sold,
           'stock': product.stock,
           'isNew': product.isNew,
@@ -85,8 +82,7 @@ class ProductFirestoreService {
           ),
           price: (data['price'] as num).toInt(),
           originalPrice: (data['originalPrice'] as num?)?.toInt(),
-          rating: (data['rating'] as num).toDouble(),
-          sold: (data['sold'] as num).toInt(),
+          sold: (data['sold'] as num?)?.toInt() ?? 0,
           stock: (data['stock'] as num?)?.toInt() ?? 20,
           isNew: data['isNew'] as bool? ?? false,
           image: data['image'] as String? ?? '',
