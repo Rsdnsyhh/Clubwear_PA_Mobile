@@ -158,11 +158,16 @@ class _ProductDetailPageState extends State<ProductDetailPage> {
                             const SizedBox(height: 10),
                             Row(
                               children: [
-                                const Icon(Icons.star_rounded,
-                                    size: 18, color: AppColors.star),
+                                Icon(
+                                  product.isSoldOut
+                                      ? Icons.cancel_outlined
+                                      : Icons.inventory_2_outlined,
+                                  size: 18,
+                                  color: product.isSoldOut ? AppColors.accent : AppColors.primary,
+                                ),
                                 const SizedBox(width: 4),
                                 Text(
-                                  '${product.rating}  •  ${product.sold} terjual',
+                                  'Stok ${product.stock}  •  Terjual ${product.sold}',
                                   style: const TextStyle(
                                     fontSize: 13,
                                     color: AppColors.textSecondary,

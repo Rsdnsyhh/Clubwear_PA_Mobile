@@ -34,6 +34,10 @@ class _Account {
 }
 
 class ClubwearProvider extends ChangeNotifier {
+  // ==== ADMIN ====
+  static const String adminEmail = 'admin@clubwear.id';
+
+  bool get isAdmin => _user?.email == adminEmail;
   final OrderFirestoreService _orderService = OrderFirestoreService();
   ClubwearProvider() {
     _authSubscription =
@@ -241,8 +245,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Heat-Reactive Print T-Shirt',
       category: ProductCategory.kaos,
       price: 435000,
-      rating: 4.4,
-      sold: 248,
       stock: 0,
       isNew: true,
       sizes: _clothing,
@@ -255,8 +257,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.kaos,
       price: 435000,
       originalPrice: 544000,
-      rating: 4.3,
-      sold: 452,
       sizes: _clothing,
       color: Color(0xFFDDEEE8),
       image: 'assets/images/p02.jpg',
@@ -266,8 +266,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Contrast Printed T-Shirt',
       category: ProductCategory.kaos,
       price: 435000,
-      rating: 4.8,
-      sold: 26,
       stock: 3,
       sizes: _clothing,
       color: Color(0xFFF1ECDD),
@@ -279,8 +277,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.kaos,
       price: 435000,
       originalPrice: 544000,
-      rating: 4.7,
-      sold: 846,
       sizes: _clothing,
       color: Color(0xFFD9D2CC),
       image: 'assets/images/p04.jpg',
@@ -290,8 +286,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Tie-Dye Printed T-Shirt',
       category: ProductCategory.kaos,
       price: 435000,
-      rating: 4.8,
-      sold: 66,
       sizes: _clothing,
       color: Color(0xFFE5DCE6),
       image: 'assets/images/p05.jpg',
@@ -304,8 +298,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.kemeja,
       price: 489000,
       originalPrice: 612000,
-      rating: 4.6,
-      sold: 512,
       sizes: _clothing,
       color: Color(0xFFDDE6F0),
       image: 'assets/images/p06.jpg',
@@ -315,8 +307,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Linen Blend Overshirt',
       category: ProductCategory.kemeja,
       price: 559000,
-      rating: 4.4,
-      sold: 143,
       stock: 5,
       isNew: true,
       sizes: _clothing,
@@ -328,8 +318,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Striped Short Sleeve Shirt',
       category: ProductCategory.kemeja,
       price: 429000,
-      rating: 4.5,
-      sold: 231,
       sizes: _clothing,
       color: Color(0xFFE2E8E4),
       image: 'assets/images/p08.jpg',
@@ -340,8 +328,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.kemeja,
       price: 459000,
       originalPrice: 574000,
-      rating: 4.3,
-      sold: 184,
       sizes: _clothing,
       color: Color(0xFFEFEDE8),
       image: 'assets/images/p09.jpg',
@@ -351,8 +337,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Flannel Check Shirt',
       category: ProductCategory.kemeja,
       price: 519000,
-      rating: 4.7,
-      sold: 97,
       isNew: true,
       sizes: _clothing,
       color: Color(0xFFE6D5CF),
@@ -366,8 +350,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.celana,
       price: 629000,
       originalPrice: 786000,
-      rating: 4.7,
-      sold: 698,
       sizes: _pants,
       color: Color(0xFFD8D3C4),
       image: 'assets/images/p11.jpg',
@@ -377,8 +359,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Relaxed Fit Chino Pants',
       category: ProductCategory.celana,
       price: 519000,
-      rating: 4.5,
-      sold: 377,
       sizes: _pants,
       color: Color(0xFFE3D9C8),
       image: 'assets/images/p12.jpg',
@@ -388,8 +368,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Straight Fit Jeans',
       category: ProductCategory.celana,
       price: 599000,
-      rating: 4.6,
-      sold: 455,
       sizes: _pants,
       color: Color(0xFFCBD7E4),
       image: 'assets/images/p13.jpg',
@@ -400,8 +378,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.celana,
       price: 399000,
       originalPrice: 499000,
-      rating: 4.4,
-      sold: 612,
       sizes: _pants,
       color: Color(0xFFDADADA),
       image: 'assets/images/p14.jpg',
@@ -411,8 +387,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Pleated Baggy Trousers',
       category: ProductCategory.celana,
       price: 579000,
-      rating: 4.5,
-      sold: 128,
       isNew: true,
       sizes: _pants,
       color: Color(0xFFE0DCD3),
@@ -426,8 +400,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.jaket,
       price: 799000,
       originalPrice: 999000,
-      rating: 4.8,
-      sold: 421,
       sizes: _clothing,
       color: Color(0xFFC9D6E3),
       image: 'assets/images/p16.jpg',
@@ -437,8 +409,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Lightweight Bomber Jacket',
       category: ProductCategory.jaket,
       price: 859000,
-      rating: 4.6,
-      sold: 205,
       isNew: true,
       sizes: _clothing,
       color: Color(0xFFD2D8CF),
@@ -449,8 +419,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Zip Hoodie Jacket',
       category: ProductCategory.jaket,
       price: 649000,
-      rating: 4.5,
-      sold: 538,
       sizes: _clothing,
       color: Color(0xFFDCDCDC),
       image: 'assets/images/p18.jpg',
@@ -461,8 +429,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.jaket,
       price: 689000,
       originalPrice: 861000,
-      rating: 4.4,
-      sold: 266,
       sizes: _clothing,
       color: Color(0xFFD5DDD8),
       image: 'assets/images/p19.jpg',
@@ -472,8 +438,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Varsity Jacket',
       category: ProductCategory.jaket,
       price: 949000,
-      rating: 4.7,
-      sold: 74,
       isNew: true,
       sizes: _clothing,
       color: Color(0xFFE4D3D0),
@@ -487,8 +451,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.sweater,
       price: 568000,
       originalPrice: 710000,
-      rating: 4.6,
-      sold: 753,
       sizes: _clothing,
       color: Color(0xFFCFE8DC),
       image: 'assets/images/p21.jpg',
@@ -499,8 +461,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.sweater,
       price: 568000,
       originalPrice: 710000,
-      rating: 4.3,
-      sold: 801,
       sizes: _clothing,
       color: Color(0xFFE6E8EE),
       image: 'assets/images/p22.jpg',
@@ -510,8 +470,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Ribbed Knit Sweater',
       category: ProductCategory.sweater,
       price: 529000,
-      rating: 4.5,
-      sold: 289,
       sizes: _clothing,
       color: Color(0xFFEADFD3),
       image: 'assets/images/p23.jpg',
@@ -521,8 +479,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Oversized Crewneck Sweatshirt',
       category: ProductCategory.sweater,
       price: 459000,
-      rating: 4.6,
-      sold: 390,
       sizes: _clothing,
       color: Color(0xFFE3E1DC),
       image: 'assets/images/p24.jpg',
@@ -533,8 +489,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.sweater,
       price: 599000,
       originalPrice: 749000,
-      rating: 4.4,
-      sold: 118,
       sizes: _clothing,
       color: Color(0xFFE8DDD0),
       image: 'assets/images/p25.jpg',
@@ -547,8 +501,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.sepatu,
       price: 899000,
       originalPrice: 1124000,
-      rating: 4.7,
-      sold: 634,
       sizes: _shoes,
       color: Color(0xFFE9E7E2),
       image: 'assets/images/p26.jpg',
@@ -558,8 +510,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Canvas Low-Top Sneakers',
       category: ProductCategory.sepatu,
       price: 459000,
-      rating: 4.4,
-      sold: 912,
       sizes: _shoes,
       color: Color(0xFFDEDCD6),
       image: 'assets/images/p27.jpg',
@@ -569,8 +519,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Retro Running Shoes',
       category: ProductCategory.sepatu,
       price: 779000,
-      rating: 4.6,
-      sold: 347,
       isNew: true,
       sizes: _shoes,
       color: Color(0xFFDCE3E8),
@@ -581,8 +529,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Suede Derby Shoes',
       category: ProductCategory.sepatu,
       price: 849000,
-      rating: 4.5,
-      sold: 112,
       sizes: _shoes,
       color: Color(0xFFE2D5C6),
       image: 'assets/images/p29.jpg',
@@ -593,8 +539,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.sepatu,
       price: 629000,
       originalPrice: 786000,
-      rating: 4.3,
-      sold: 205,
       sizes: _shoes,
       color: Color(0xFFD9D0C7),
       image: 'assets/images/p30.jpg',
@@ -606,8 +550,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Woven Leather Belt',
       category: ProductCategory.aksesoris,
       price: 199000,
-      rating: 4.3,
-      sold: 158,
       sizes: _oneSize,
       color: Color(0xFFE5D8C9),
       image: 'assets/images/p31.jpg',
@@ -618,8 +560,6 @@ class ClubwearProvider extends ChangeNotifier {
       category: ProductCategory.aksesoris,
       price: 229000,
       originalPrice: 286000,
-      rating: 4.6,
-      sold: 540,
       sizes: _oneSize,
       color: Color(0xFFD7DDE0),
       image: 'assets/images/p32.jpg',
@@ -629,8 +569,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Crossbody Utility Bag',
       category: ProductCategory.aksesoris,
       price: 379000,
-      rating: 4.5,
-      sold: 97,
       isNew: true,
       sizes: _oneSize,
       color: Color(0xFFD9D6CF),
@@ -641,8 +579,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Minimal Quartz Watch',
       category: ProductCategory.aksesoris,
       price: 449000,
-      rating: 4.7,
-      sold: 276,
       sizes: _oneSize,
       color: Color(0xFFDFDFDF),
       image: 'assets/images/p34.jpg',
@@ -652,8 +588,6 @@ class ClubwearProvider extends ChangeNotifier {
       name: 'Cotton Tote Bag',
       category: ProductCategory.aksesoris,
       price: 149000,
-      rating: 4.2,
-      sold: 331,
       sizes: _oneSize,
       color: Color(0xFFEFEADF),
       image: 'assets/images/p35.jpg',
@@ -816,16 +750,18 @@ class ClubwearProvider extends ChangeNotifier {
   }
 
 
+  // Mengunggah daftar produk lokal ke Firestore.
   Future<Order?> placeOrder() async {
     if (_cart.isEmpty || !hasAddress) return null;
-
     if (FirebaseAuth.instance.currentUser == null) {
       debugPrint('Checkout gagal: pengguna belum login.');
       return null;
     }
 
+    final cartSnapshot = _cart.values.toList();
+
     final lines = [
-      for (final item in _cart.values)
+      for (final item in cartSnapshot)
         OrderLine(
           name: item.product.name,
           category: item.product.category.label,
@@ -846,6 +782,16 @@ class ClubwearProvider extends ChangeNotifier {
 
     try {
       await _orderService.saveOrder(order);
+
+      // ==== REAL-TIME SOLD + STOCK ====
+      final productService = ProductFirestoreService();
+      for (final item in _cart.values) {
+        await productService.incrementSoldAndDecreaseStock(
+          item.product.id,
+          item.quantity,
+        );
+      }
+
       await _cartService.clearCart();
 
       _orderSeq++;
@@ -859,8 +805,6 @@ class ClubwearProvider extends ChangeNotifier {
       rethrow;
     }
   }
-
-  // Mengunggah daftar produk lokal ke Firestore.
   Future<void> uploadProductsToFirebase() async {
     await ProductFirestoreService().uploadProducts(products);
   }

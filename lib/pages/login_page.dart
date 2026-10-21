@@ -5,6 +5,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import '../widgets/common_widgets.dart';
 import 'main_nav_page.dart';
 import 'register_page.dart';
+import 'admin_login_page.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -231,6 +232,28 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ],
+              ),
+            ),
+            const SizedBox(height: 14),
+            Center(
+              child: TextButton.icon(
+                onPressed: _loading
+                    ? null
+                    : () => Navigator.of(context).push(
+                  MaterialPageRoute<void>(
+                    builder: (_) => const AdminLoginPage(),
+                  ),
+                ),
+                icon: const Icon(Icons.admin_panel_settings_outlined,
+                    size: 18, color: AppColors.gold),
+                label: const Text(
+                  'Login sebagai Admin',
+                  style: TextStyle(
+                    color: AppColors.textSecondary,
+                    fontSize: 12.5,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
               ),
             ),
           ],
