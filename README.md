@@ -1,129 +1,203 @@
-# Clubwear - Proyek Akhir Pemrograman Piranti Bergerak
+# 🛍️ Clubwear
 
-Aplikasi toko pakaian pria
+Aplikasi *e-commerce* toko pakaian pria berbasis **Flutter** dengan backend **Firebase**.
+Dibuat sebagai Proyek Akhir mata kuliah **Pemrograman Piranti Bergerak**.
 
-## Cara menjalankan
-
-```bash
-cd nama_folder
-flutter pub get
-flutter run
-```
-
-## Struktur
-
-```
-clubwear_app/
-├── pubspec.yaml
-├── assets/images/                  # foto produk p01.jpg ... p35.jpg
-└── lib/
-    ├── main.dart                   # MaterialApp + tema + ChangeNotifierProvider
-    ├── models/
-    │   ├── product.dart            # Product, ProductCategory, formatRupiah()
-    │   ├── cart_item.dart
-    │   └── order.dart              # riwayat pesanan
-    ├── providers/
-    │   └── clubwear_provider.dart  # produk, favorit, keranjang, akun, tab aktif
-    ├── pages/
-    │   ├── splash_page.dart
-    │   ├── login_page.dart
-    │   ├── register_page.dart
-    │   ├── main_nav_page.dart      # bottom navigation 4 tab
-    │   ├── home_page.dart
-    │   ├── product_detail_page.dart
-    │   ├── favorite_page.dart
-    │   ├── cart_page.dart
-    │   └── profile_page.dart
-    └── widgets/
-        ├── product_card.dart       # ProductCard + ProductImage
-        ├── size_picker_dialog.dart # pop up pilih ukuran
-        └── common_widgets.dart     # AppColors, PrimaryButton, AppTextField, EmptyState, dll
-```
-
-## Perbaikan
-
-1. Pop up pilih ukuran: `widgets/size_picker_dialog.dart`, dipanggil dari tombol "+" di `product_card.dart`.
-2. Setelah daftar kembali ke login: `register_page.dart` memanggil `Navigator.pop(context, email)`;
-   `login_page.dart` (`_goToRegister`) mengisi email otomatis dan menampilkan SnackBar sukses.
-
-## Fitur tambahan
-
-- Halaman detail produk (ketuk kartu): pilih ukuran, jumlah, deskripsi, info stok menipis.
-- Urutkan produk di beranda: harga terendah/tertinggi, terlaris, rating.
-- Stok membatasi jumlah beli (contoh: Contrast Printed T-Shirt stok 3).
-- Ongkir Rp20.000, gratis untuk belanja >= Rp500.000 + progress bar di keranjang.
-- Riwayat pesanan, alamat pengiriman, dan Pusat Bantuan di profil sudah berfungsi.
-- Tombol back Android di tab lain kembali ke Beranda dulu; notifikasi saat favorit diubah.
-
-# 🛍️ Clubwear - E-Commerce Fashion App (Mobile)
-
-**Clubwear** adalah aplikasi *e-commerce mobile* berbasis Android dan iOS yang dibangun menggunakan framework **Flutter**[cite: 3]. Aplikasi ini dirancang khusus untuk memenuhi tugas akhir (Projek Akhir Mobile) dan berfokus pada penjualan produk *fashion* (kaos, kemeja, celana, jaket, sweater, sepatu, dan aksesoris) dengan antarmuka pengguna yang modern, interaktif, dan responsif[cite: 10].
+Produk yang dijual: kaos, kemeja, celana, jaket, sweater, sepatu, dan aksesoris.
 
 ---
 
 ## 📖 Tentang Aplikasi
 
-Aplikasi Clubwear memfasilitasi transaksi jual-beli pakaian secara digital dengan membagi hak akses menjadi dua peran utama:
+Aplikasi memiliki dua peran:
 
-1. **User (Pembeli):**
-   Dapat menjelajahi katalog produk, melihat detail produk (termasuk diskon dan stok), memilih ukuran[cite: 4], menambahkan barang ke keranjang[cite: 8], mengatur alamat pengiriman, dan melakukan *checkout* pesanan[cite: 10]. Pengguna juga dapat menyimpan produk ke daftar favorit[cite: 6, 10].
-2. **Admin:**
-   Memiliki akses ke **Admin Dashboard** khusus (login menggunakan email khusus admin, misal: `admin@clubwear.id`). Admin dapat mengelola produk (Tambah, Edit, Hapus), memantau stok, serta melihat seluruh daftar pesanan yang masuk dari pengguna secara *real-time*[cite: 9, 11].
-
----
-
-## ✨ Fitur Utama
-
-### 🛒 Fitur Pengguna (User)
-* **Autentikasi:** Login dan Register menggunakan Email & Password (Firebase Auth)[cite: 8, 9, 10, 11].
-* **Katalog Produk:** Menampilkan daftar produk berdasarkan kategori dengan indikator *Sold Out*, *New*, dan *Diskon*[cite: 6, 10].
-* **Manajemen Keranjang (Cart):** Menambah, mengurangi kuantitas, atau menghapus produk dari keranjang belanja berdasarkan ukuran (Size)[cite: 8, 10].
-* **Favorit (Wishlist):** Menyimpan produk yang disukai[cite: 6, 10].
-* **Checkout & Pesanan:** Menghitung total belanja, biaya ongkir (gratis ongkir untuk minimum belanja tertentu), dan riwayat pesanan[cite: 9, 10].
-
-### 🛠️ Fitur Admin
-* **Dashboard Admin:** Antarmuka khusus untuk manajemen toko.
-* **Manajemen Produk (CRUD):** Mengunggah produk baru, mengedit detail (harga, stok, nama), dan menghapus produk[cite: 7, 11].
-* **Manajemen Pesanan:** Melihat riwayat transaksi seluruh pelanggan secara *real-time*[cite: 9, 11].
-* **Data Seeding:** Tombol "Upload produk awal" untuk memasukkan data *dummy* ke Firestore dengan 1 klik[cite: 10, 11].
+| Peran | Kemampuan |
+|-------|-----------|
+| **User (pembeli)** | Melihat katalog, membuka detail produk, memilih ukuran, menyimpan favorit, mengelola keranjang, mengatur alamat, checkout, dan melihat riwayat pesanan. |
+| **Admin** | Login lewat halaman khusus admin (`admin@clubwear.id`), mengelola produk (tambah, ubah, hapus), memantau stok, dan melihat semua pesanan dari seluruh pengguna secara *real-time*. |
 
 ---
 
-## 🛠️ Teknologi yang Digunakan
+## ✨ Fitur
 
-* **Framework:** [Flutter](https://flutter.dev/)[cite: 3]
-* **State Management:** [Provider](https://pub.dev/packages/provider) (`ClubwearProvider`)[cite: 3, 10]
-* **Backend / Database:** [Firebase Cloud Firestore](https://firebase.google.com/docs/firestore)[cite: 7, 8, 9]
-* **Autentikasi:** [Firebase Authentication](https://firebase.google.com/docs/auth)[cite: 8, 9, 11]
+### Pengguna
+- **Autentikasi** Email & Password (Firebase Auth). Setelah daftar, pengguna kembali ke halaman login dengan email terisi otomatis.
+- **Katalog produk** per kategori dengan label *Sold Out*, *New*, dan diskon.
+- **Urutkan produk** di beranda: harga terendah/tertinggi, terlaris, rating.
+- **Detail produk**: pilih ukuran, jumlah, deskripsi, dan peringatan stok menipis.
+- **Pop up pilih ukuran** langsung dari tombol "+" pada kartu produk.
+- **Keranjang** per ukuran, tersimpan di Firestore sehingga tidak hilang saat aplikasi ditutup.
+- **Batas stok**: jumlah beli tidak bisa melebihi stok (contoh: Contrast Printed T-Shirt stok 3).
+- **Ongkir** Rp20.000, **gratis untuk belanja ≥ Rp500.000**, dilengkapi progress bar di keranjang.
+- **Favorit (wishlist)** dengan notifikasi saat ditambah atau dihapus.
+- **Profil**: riwayat pesanan, alamat pengiriman, dan Pusat Bantuan.
+- Tombol *back* Android di tab lain kembali ke Beranda terlebih dahulu.
+
+### Admin
+- **Dashboard admin** untuk manajemen toko.
+- **CRUD produk**: tambah, ubah (harga, stok, nama, dll.), dan hapus produk. Gambar produk baru diisi lewat URL (opsional).
+- **Pesanan masuk** dari semua pengguna, tampil *real-time*.
+- **Upload produk awal**: tombol di menu dashboard untuk mengirim data produk bawaan aplikasi ke Firestore dengan satu klik.
 
 ---
 
-## ⚙️ Cara Kerja Aplikasi
+## 🧰 Teknologi
 
-Aplikasi menggunakan arsitektur MVVM (Model-View-ViewModel) yang dimodifikasi menggunakan Provider:
-1. **State & Logika Bisnis:** Semua state seperti keranjang, daftar favorit, dan profil user dikelola di dalam `ClubwearProvider.dart`[cite: 10].
-2. **Sinkronisasi Database (Real-time):**
-   - Aplikasi menggunakan `ProductFirestoreService`, `CartFirestoreService`, dan `OrderFirestoreService` untuk berkomunikasi dengan Cloud Firestore[cite: 7, 8, 9, 10].
-   - Data produk dan pesanan dimuat menggunakan `Stream` (real-time)[cite: 7, 8, 9]. Jika admin mengubah harga atau stok produk, perubahan langsung muncul di layar pembeli tanpa perlu *refresh*.
-3. **Alur Checkout & Transaksi:**
-   Saat pengguna menekan tombol "Checkout", sistem menjalankan *Firestore Transaction*. Sistem menyimpan data pesanan (`orders`) sekaligus **mengurangi stok** dan **menambah jumlah terjual (sold)** pada dokumen produk secara otomatis dan konsisten[cite: 7, 9, 10].
-4. **Isolasi Data:** Data keranjang (`cartItems`) disimpan pada sub-koleksi (`users/{userId}/cartItems`) sehingga data keranjang milik pengguna satu tidak akan bercampur dengan pengguna lain dan tidak hilang saat aplikasi ditutup[cite: 8].
+| Kebutuhan | Paket / Layanan |
+|-----------|-----------------|
+| Framework | Flutter (Dart SDK `^3.5.0`) |
+| State management | [`provider`](https://pub.dev/packages/provider) `^6.1.5+1` |
+| Autentikasi | [`firebase_auth`](https://pub.dev/packages/firebase_auth) `^7.0.0` |
+| Database | [`cloud_firestore`](https://pub.dev/packages/cloud_firestore) `^7.0.0` |
+| Inisialisasi Firebase | [`firebase_core`](https://pub.dev/packages/firebase_core) `^5.0.0` |
 
 ---
 
-## 🔗 Cara Menghubungkan Aplikasi dengan Database (Firebase)
+## 📁 Struktur Folder
 
-Untuk menjalankan proyek ini di lokal dengan database Firebase milikmu sendiri, ikuti langkah-langkah berikut:
+```
+Clubwear_PA_Mobile/
+├── android/ ios/ web/ windows/ linux/ macos/   # folder platform (dibuat otomatis oleh Flutter)
+├── assets/
+│   └── images/                                 # foto produk p01.jpg ... p35.jpg
+│       ├── kaos/        (p01 - p05)
+│       ├── kemeja/      (p06 - p10)
+│       ├── celana/      (p11 - p15)
+│       ├── jaket/       (p16 - p20)
+│       ├── sweater/     (p21 - p25)
+│       ├── sepatu/      (p26 - p30)
+│       └── aksesoris/   (p31 - p35)
+├── lib/
+│   ├── main.dart                       # inisialisasi Firebase, MaterialApp, tema, ChangeNotifierProvider
+│   ├── firebase_options.dart           # konfigurasi Firebase (hasil flutterfire configure)
+│   ├── models/
+│   │   ├── product.dart                # Product, ProductCategory, formatRupiah()
+│   │   ├── cart_item.dart              # item keranjang
+│   │   └── order.dart                  # Order & OrderLine (riwayat pesanan)
+│   ├── providers/
+│   │   └── clubwear_provider.dart      # state: produk, favorit, keranjang, akun, tab aktif, status admin
+│   ├── services/                       # akses Cloud Firestore
+│   │   ├── product_firestore_service.dart
+│   │   ├── cart_firestore_service.dart
+│   │   └── order_firestore_service.dart
+│   ├── pages/
+│   │   ├── splash_page.dart
+│   │   ├── login_page.dart
+│   │   ├── register_page.dart
+│   │   ├── main_nav_page.dart          # bottom navigation 4 tab
+│   │   ├── home_page.dart
+│   │   ├── product_detail_page.dart
+│   │   ├── favorite_page.dart
+│   │   ├── cart_page.dart
+│   │   ├── profile_page.dart
+│   │   ├── admin_login_page.dart       # login khusus admin
+│   │   ├── admin_dashboard_page.dart   # daftar produk & pesanan
+│   │   ├── admin_profile_page.dart
+│   │   └── add_product_page.dart       # form tambah / ubah produk
+│   └── widgets/
+│       ├── product_card.dart           # ProductCard + ProductImage
+│       ├── size_picker_dialog.dart     # pop up pilih ukuran
+│       └── common_widgets.dart         # AppColors, PrimaryButton, AppTextField, EmptyState, dll.
+├── test/
+│   └── widget_test.dart
+├── firebase.json                       # konfigurasi FlutterFire
+├── pubspec.yaml
+└── README.md
+```
 
-### 1. Persiapan Project Firebase
-1. Buka [Firebase Console](https://console.firebase.google.com/) dan buat **Project Baru**.
-2. Masuk ke menu **Build > Authentication**, klik **Get Started**, dan aktifkan *Sign-in provider* **Email/Password**.
-3. Masuk ke menu **Build > Firestore Database**, klik **Create Database**.
-4. Atur *Security Rules* Firestore sementara ke **Test Mode** (agar bisa melakukan *Read/Write* tanpa error *permission denied*).
+---
 
-### 2. Konfigurasi FlutterFire CLI di Terminal
-Aplikasi ini dihubungkan ke Firebase menggunakan file `firebase_options.dart` yang di-generate otomatis.
-1. Buka terminal komputer, dan pastikan sudah login ke Firebase:
+## ⚙️ Cara Kerja
+
+Arsitektur: **Provider + service layer**.
+
+1. **State & logika bisnis** (keranjang, favorit, profil, tab aktif, perhitungan ongkir, status admin) ada di `ClubwearProvider`.
+2. **Service** (`lib/services/`) hanya berurusan dengan Firestore. Provider memanggil service, lalu UI mendengarkan provider.
+3. **Real-time**: produk, keranjang, dan pesanan dibaca lewat `Stream` (`snapshots()`). Jika admin mengubah harga atau stok, tampilan pembeli ikut berubah tanpa *refresh*.
+4. **Checkout**: memakai `Firestore Transaction` agar penyimpanan pesanan, pengurangan **stok**, dan penambahan jumlah **terjual** berjalan konsisten.
+5. **Admin** dikenali dari email `admin@clubwear.id` (konstanta `ClubwearProvider.adminEmail`).
+
+### Struktur data Firestore
+
+```
+products/{productId}                 # katalog produk (dibaca semua pengguna)
+users/{uid}/cartItems/{itemKey}      # keranjang milik masing-masing pengguna
+users/{uid}/orders/{orderId}         # pesanan milik pengguna
+```
+
+Dashboard admin membaca semua pesanan memakai `collectionGroup('orders')`.
+
+---
+
+## 🚀 Cara Menjalankan
+
+### Prasyarat
+- [Flutter SDK](https://docs.flutter.dev/get-started/install) (Dart `>= 3.5.0`)
+- Android Studio / emulator atau perangkat fisik
+- Akun Google untuk Firebase
+
+### 1. Ambil dependensi
+
+```bash
+cd Clubwear_PA_Mobile
+flutter pub get
+```
+
+### 2. Siapkan Firebase milik sendiri
+
+> Repositori ini sudah memuat `firebase_options.dart` untuk proyek Firebase pengembang. Agar memakai database sendiri, ikuti langkah berikut.
+
+1. Buka [Firebase Console](https://console.firebase.google.com/) dan buat **project baru**.
+2. **Build → Authentication → Get started**, aktifkan provider **Email/Password**.
+3. **Build → Firestore Database → Create database**.
+4. Untuk pengembangan, gunakan **Test mode** agar tidak terkena *permission denied*.
+   > ⚠️ Test mode otomatis berakhir setelah 30 hari dan tidak aman untuk produksi. Ganti dengan *Security Rules* sebelum aplikasi dipakai nyata.
+5. Hubungkan aplikasi dengan FlutterFire CLI:
+
    ```bash
+   npm install -g firebase-tools
    firebase login
-   
+   dart pub global activate flutterfire_cli
+   flutterfire configure
+   ```
+
+   Perintah terakhir membuat ulang `lib/firebase_options.dart`, `firebase.json`, dan `android/app/google-services.json`.
+
+### 3. Buat akun admin
+
+1. Di Firebase Console buka **Authentication → Users → Add user**.
+2. Isi email `admin@clubwear.id` dan password pilihanmu.
+3. Login lewat halaman **Login Admin** di aplikasi.
+4. Dari menu dashboard, pilih **Upload produk awal** untuk mengisi katalog.
+
+Untuk memakai email admin yang lain, ubah `adminEmail` di `lib/providers/clubwear_provider.dart`.
+
+### 4. Jalankan
+
+```bash
+flutter run
+```
+
+### Troubleshooting
+
+| Masalah | Solusi |
+|---------|--------|
+| Pesanan admin tidak muncul, ada error `FAILED_PRECONDITION: requires an index` | Query `collectionGroup('orders')` butuh indeks. Buka link yang muncul di log error untuk membuatnya otomatis, lalu tunggu beberapa menit. |
+| `permission-denied` | Cek *Security Rules* Firestore (lihat langkah 2.4). |
+| Gambar produk tidak tampil | Pastikan `flutter pub get` sudah dijalankan dan folder `assets/images/<kategori>/` terdaftar di `pubspec.yaml`. |
+
+---
+
+## 👤 Akun Demo
+
+| Peran | Email | Password |
+|-------|-------|----------|
+| Admin | `admin@clubwear.id` | *(sesuai yang kamu buat di Firebase)* |
+| User | daftar sendiri lewat halaman Register | |
+
+---
+
+## 📝 Catatan Pengembangan
+
+- Aplikasi ditargetkan untuk **Android** (`applicationId`: `com.example.clubwear`). Folder platform lain ikut dibuat Flutter dan sudah dikonfigurasi di `firebase.json`.
+- `.dart_tool/`, `build/`, dan `.git/` jangan ikut dikirim saat mengumpulkan proyek dalam bentuk ZIP. Cukup `lib/`, `assets/`, `android/`, `ios/`, `web/`, `test/`, `pubspec.yaml`, `firebase.json`, dan `README.md`.
