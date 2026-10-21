@@ -48,7 +48,7 @@ class ClubwearProvider extends ChangeNotifier {
 
   // ===================== AUTENTIKASI =====================
 
-  void _handleAuthChange(User? firebaseUser) {
+  void _handleAuthChange(User? firebaseUser) async {
     _productSubscription?.cancel();
     _cartSubscription?.cancel();
 
@@ -69,6 +69,15 @@ class ClubwearProvider extends ChangeNotifier {
           : email.split('@').first,
       email: email,
     );
+
+    try {
+      final added = await ProductFirestoreService()
+          .syncMissingProducts(seedProducts);
+
+      debugPrint('Produk baru ditambahkan: $added');
+    } catch (e) {
+      debugPrint('Gagal sinkronisasi produk: $e');
+    }
 
     _productSubscription =
         ProductFirestoreService().getProducts().listen(
@@ -247,7 +256,7 @@ class ClubwearProvider extends ChangeNotifier {
       isNew: true,
       sizes: _clothing,
       color: Color(0xFFEDEBE6),
-      image: 'assets/images/p01.jpg',
+      image: 'assets/images/kaos/p01.jpg',
     ),
     Product(
       id: 'p02',
@@ -259,7 +268,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 452,
       sizes: _clothing,
       color: Color(0xFFDDEEE8),
-      image: 'assets/images/p02.jpg',
+      image: 'assets/images/kaos/p02.jpg',
     ),
     Product(
       id: 'p03',
@@ -271,7 +280,7 @@ class ClubwearProvider extends ChangeNotifier {
       stock: 3,
       sizes: _clothing,
       color: Color(0xFFF1ECDD),
-      image: 'assets/images/p03.jpg',
+      image: 'assets/images/kaos/p03.jpg',
     ),
     Product(
       id: 'p04',
@@ -283,7 +292,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 846,
       sizes: _clothing,
       color: Color(0xFFD9D2CC),
-      image: 'assets/images/p04.jpg',
+      image: 'assets/images/kaos/p04.jpg',
     ),
     Product(
       id: 'p05',
@@ -294,7 +303,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 66,
       sizes: _clothing,
       color: Color(0xFFE5DCE6),
-      image: 'assets/images/p05.jpg',
+      image: 'assets/images/kaos/p05.jpg',
     ),
 
     // ---------- KEMEJA ----------
@@ -308,7 +317,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 512,
       sizes: _clothing,
       color: Color(0xFFDDE6F0),
-      image: 'assets/images/p06.jpg',
+      image: 'assets/images/kemeja/p06.jpg',
     ),
     Product(
       id: 'p07',
@@ -321,7 +330,7 @@ class ClubwearProvider extends ChangeNotifier {
       isNew: true,
       sizes: _clothing,
       color: Color(0xFFE8E1D2),
-      image: 'assets/images/p07.jpg',
+      image: 'assets/images/kemeja/p07.jpg',
     ),
     Product(
       id: 'p08',
@@ -332,7 +341,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 231,
       sizes: _clothing,
       color: Color(0xFFE2E8E4),
-      image: 'assets/images/p08.jpg',
+      image: 'assets/images/kemeja/p08.jpg',
     ),
     Product(
       id: 'p09',
@@ -344,7 +353,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 184,
       sizes: _clothing,
       color: Color(0xFFEFEDE8),
-      image: 'assets/images/p09.jpg',
+      image: 'assets/images/kemeja/p09.jpg',
     ),
     Product(
       id: 'p10',
@@ -356,7 +365,7 @@ class ClubwearProvider extends ChangeNotifier {
       isNew: true,
       sizes: _clothing,
       color: Color(0xFFE6D5CF),
-      image: 'assets/images/p10.jpg',
+      image: 'assets/images/kemeja/p10.jpg',
     ),
 
     // ---------- CELANA ----------
@@ -370,7 +379,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 698,
       sizes: _pants,
       color: Color(0xFFD8D3C4),
-      image: 'assets/images/p11.jpg',
+      image: 'assets/images/celana/p11.jpg',
     ),
     Product(
       id: 'p12',
@@ -381,7 +390,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 377,
       sizes: _pants,
       color: Color(0xFFE3D9C8),
-      image: 'assets/images/p12.jpg',
+      image: 'assets/images/celana/p12.jpg',
     ),
     Product(
       id: 'p13',
@@ -392,7 +401,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 455,
       sizes: _pants,
       color: Color(0xFFCBD7E4),
-      image: 'assets/images/p13.jpg',
+      image: 'assets/images/celana/p13.jpg',
     ),
     Product(
       id: 'p14',
@@ -404,7 +413,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 612,
       sizes: _pants,
       color: Color(0xFFDADADA),
-      image: 'assets/images/p14.jpg',
+      image: 'assets/images/celana/p14.jpg',
     ),
     Product(
       id: 'p15',
@@ -416,7 +425,7 @@ class ClubwearProvider extends ChangeNotifier {
       isNew: true,
       sizes: _pants,
       color: Color(0xFFE0DCD3),
-      image: 'assets/images/p15.jpg',
+      image: 'assets/images/celana/p15.jpg',
     ),
 
     // ---------- JAKET ----------
@@ -430,7 +439,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 421,
       sizes: _clothing,
       color: Color(0xFFC9D6E3),
-      image: 'assets/images/p16.jpg',
+      image: 'assets/images/jaket/p16.jpg',
     ),
     Product(
       id: 'p17',
@@ -442,7 +451,7 @@ class ClubwearProvider extends ChangeNotifier {
       isNew: true,
       sizes: _clothing,
       color: Color(0xFFD2D8CF),
-      image: 'assets/images/p17.jpg',
+      image: 'assets/images/jaket/p17.jpg',
     ),
     Product(
       id: 'p18',
@@ -453,7 +462,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 538,
       sizes: _clothing,
       color: Color(0xFFDCDCDC),
-      image: 'assets/images/p18.jpg',
+      image: 'assets/images/jaket/p18.jpg',
     ),
     Product(
       id: 'p19',
@@ -465,7 +474,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 266,
       sizes: _clothing,
       color: Color(0xFFD5DDD8),
-      image: 'assets/images/p19.jpg',
+      image: 'assets/images/jaket/p19.jpg',
     ),
     Product(
       id: 'p20',
@@ -477,7 +486,7 @@ class ClubwearProvider extends ChangeNotifier {
       isNew: true,
       sizes: _clothing,
       color: Color(0xFFE4D3D0),
-      image: 'assets/images/p20.jpg',
+      image: 'assets/images/jaket/p20.jpg',
     ),
 
     // ---------- SWEATER ----------
@@ -491,7 +500,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 753,
       sizes: _clothing,
       color: Color(0xFFCFE8DC),
-      image: 'assets/images/p21.jpg',
+      image: 'assets/images/sweater/p21.jpg',
     ),
     Product(
       id: 'p22',
@@ -503,7 +512,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 801,
       sizes: _clothing,
       color: Color(0xFFE6E8EE),
-      image: 'assets/images/p22.jpg',
+      image: 'assets/images/sweater/p22.jpg',
     ),
     Product(
       id: 'p23',
@@ -514,7 +523,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 289,
       sizes: _clothing,
       color: Color(0xFFEADFD3),
-      image: 'assets/images/p23.jpg',
+      image: 'assets/images/sweater/p23.jpg',
     ),
     Product(
       id: 'p24',
@@ -525,7 +534,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 390,
       sizes: _clothing,
       color: Color(0xFFE3E1DC),
-      image: 'assets/images/p24.jpg',
+      image: 'assets/images/sweater/p24.jpg',
     ),
     Product(
       id: 'p25',
@@ -537,7 +546,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 118,
       sizes: _clothing,
       color: Color(0xFFE8DDD0),
-      image: 'assets/images/p25.jpg',
+      image: 'assets/images/sweater/p25.jpg',
     ),
 
     // ---------- SEPATU ----------
@@ -551,7 +560,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 634,
       sizes: _shoes,
       color: Color(0xFFE9E7E2),
-      image: 'assets/images/p26.jpg',
+      image: 'assets/images/sepatu/p26.jpg',
     ),
     Product(
       id: 'p27',
@@ -562,7 +571,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 912,
       sizes: _shoes,
       color: Color(0xFFDEDCD6),
-      image: 'assets/images/p27.jpg',
+      image: 'assets/images/sepatu/p27.jpg',
     ),
     Product(
       id: 'p28',
@@ -574,7 +583,7 @@ class ClubwearProvider extends ChangeNotifier {
       isNew: true,
       sizes: _shoes,
       color: Color(0xFFDCE3E8),
-      image: 'assets/images/p28.jpg',
+      image: 'assets/images/sepatu/p28.jpg',
     ),
     Product(
       id: 'p29',
@@ -585,7 +594,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 112,
       sizes: _shoes,
       color: Color(0xFFE2D5C6),
-      image: 'assets/images/p29.jpg',
+      image: 'assets/images/sepatu/p29.jpg',
     ),
     Product(
       id: 'p30',
@@ -597,7 +606,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 205,
       sizes: _shoes,
       color: Color(0xFFD9D0C7),
-      image: 'assets/images/p30.jpg',
+      image: 'assets/images/sepatu/p30.jpg',
     ),
 
     // ---------- AKSESORIS ----------
@@ -610,7 +619,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 158,
       sizes: _oneSize,
       color: Color(0xFFE5D8C9),
-      image: 'assets/images/p31.jpg',
+      image: 'assets/images/aksesoris/p31.jpg',
     ),
     Product(
       id: 'p32',
@@ -622,7 +631,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 540,
       sizes: _oneSize,
       color: Color(0xFFD7DDE0),
-      image: 'assets/images/p32.jpg',
+      image: 'assets/images/aksesoris/p32.jpg',
     ),
     Product(
       id: 'p33',
@@ -634,7 +643,7 @@ class ClubwearProvider extends ChangeNotifier {
       isNew: true,
       sizes: _oneSize,
       color: Color(0xFFD9D6CF),
-      image: 'assets/images/p33.jpg',
+      image: 'assets/images/aksesoris/p33.jpg',
     ),
     Product(
       id: 'p34',
@@ -645,7 +654,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 276,
       sizes: _oneSize,
       color: Color(0xFFDFDFDF),
-      image: 'assets/images/p34.jpg',
+      image: 'assets/images/aksesoris/p34.jpg',
     ),
     Product(
       id: 'p35',
@@ -656,7 +665,7 @@ class ClubwearProvider extends ChangeNotifier {
       sold: 331,
       sizes: _oneSize,
       color: Color(0xFFEFEADF),
-      image: 'assets/images/p35.jpg',
+      image: 'assets/images/aksesoris/p35.jpg',
     ),
   ];
 

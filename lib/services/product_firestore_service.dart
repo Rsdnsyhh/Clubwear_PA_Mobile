@@ -7,8 +7,8 @@ import '../models/product.dart';
 class ProductFirestoreService {
   final FirebaseFirestore _db = FirebaseFirestore.instance;
 
-
-  // Mengunggah produk lokal ke Firestore satu kali.
+  // Mengunggah produk lokal ke Firestore.
+  // Fungsi ini tetap dipertahankan untuk kebutuhan lama.
   Future<void> uploadProducts(List<Product> products) async {
     final batch = _db.batch();
 
@@ -33,6 +33,42 @@ class ProductFirestoreService {
     await batch.commit();
   }
 
+  // Menambahkan hanya produk yang belum ada di Firestore.
+  // Data produk yang sudah ada tidak akan ditimpa.
+  Future<int> syncMissingProducts(List<Product> products) async {
+    final collection = _db.collection('products');
+    final batch = _db.batch();
+    int added = 0;
+
+    for (final product in products) {
+      final docRef = collection.doc(product.id);
+      final snapshot = await docRef.get();
+
+      if (!snapshot.exists) {
+        batch.set(docRef, {
+          'name': product.name,
+          'category': product.category.name,
+          'price': product.price,
+          'originalPrice': product.originalPrice,
+          'rating': product.rating,
+          'sold': product.sold,
+          'stock': product.stock,
+          'isNew': product.isNew,
+          'image': product.image,
+          'sizes': product.sizes,
+          'color': product.color.toARGB32(),
+        });
+
+        added++;
+      }
+    }
+
+    if (added > 0) {
+      await batch.commit();
+    }
+
+    return added;
+  }
 
   // Mengambil daftar produk dari Firestore secara real-time.
   Stream<List<Product>> getProducts() {
@@ -48,8 +84,7 @@ class ProductFirestoreService {
             orElse: () => ProductCategory.kaos,
           ),
           price: (data['price'] as num).toInt(),
-          originalPrice:
-          (data['originalPrice'] as num?)?.toInt(),
+          originalPrice: (data['originalPrice'] as num?)?.toInt(),
           rating: (data['rating'] as num).toDouble(),
           sold: (data['sold'] as num).toInt(),
           stock: (data['stock'] as num?)?.toInt() ?? 20,
