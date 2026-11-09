@@ -9,6 +9,7 @@ import '../models/cart_item.dart';
 import '../models/order.dart';
 import '../models/product.dart';
 import '../services/cart_firestore_service.dart';
+import '../services/local_db_service.dart';
 import '../services/product_firestore_service.dart';
 
 const _clothing = ['S', 'M', 'L', 'XL', 'XXL'];
@@ -49,6 +50,7 @@ class ClubwearProvider extends ChangeNotifier {
   StreamSubscription<List<CartItem>>? _cartSubscription;
 
   final CartFirestoreService _cartService = CartFirestoreService();
+  final LocalDbService _localDb = LocalDbService.instance;
 
   // ===================== AUTENTIKASI =====================
 
@@ -59,6 +61,10 @@ class ClubwearProvider extends ChangeNotifier {
     if (firebaseUser == null) {
       _user = null;
       _cart.clear();
+      _favoriteIds.clear();
+      _orders.clear();
+      _orderSeq = 0;
+      _address = '';
       products = List<Product>.from(seedProducts);
       notifyListeners();
       return;
@@ -73,6 +79,8 @@ class ClubwearProvider extends ChangeNotifier {
           : email.split('@').first,
       email: email,
     );
+
+    await _loadLocalData(firebaseUser.uid);
 
     try {
       final added = await ProductFirestoreService()
@@ -116,6 +124,32 @@ class ClubwearProvider extends ChangeNotifier {
         );
 
     notifyListeners();
+  }
+
+  // Memuat favorit, alamat, dan riwayat pesanan dari SQLite.
+  Future<void> _loadLocalData(String uid) async {
+    try {
+      final favorites = await _localDb.getFavoriteIds(uid);
+      final address = await _localDb.getAddress(uid);
+      final savedOrders = await _localDb.getOrders(uid);
+
+      _favoriteIds
+        ..clear()
+        ..addAll(favorites);
+      _address = address;
+      _orders
+        ..clear()
+        ..addAll(savedOrders);
+      _orderSeq = savedOrders.length;
+
+      debugPrint('Data lokal [${_localDb.backendName}] dimuat untuk $uid: '
+          '${favorites.length} favorit, ${savedOrders.length} pesanan, '
+          'alamat ${address.isEmpty ? "kosong" : "ada"}');
+
+      notifyListeners();
+    } catch (e, st) {
+      debugPrint('Gagal memuat data lokal (SQLite): $e\n$st');
+    }
   }
 
   @override
@@ -618,8 +652,19 @@ class ClubwearProvider extends ChangeNotifier {
       products.where((p) => _favoriteIds.contains(p.id)).toList();
 
   void toggleFavorite(String productId) {
-    if (!_favoriteIds.remove(productId)) {
-      _favoriteIds.add(productId);
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    final nowFavorite = !_favoriteIds.remove(productId);
+
+    if (nowFavorite) _favoriteIds.add(productId);
+
+    if (uid != null) {
+      final write = nowFavorite
+          ? _localDb.addFavorite(uid, productId)
+          : _localDb.removeFavorite(uid, productId);
+
+      write.catchError((Object error) {
+        debugPrint('Gagal menyimpan favorit lokal: $error');
+      });
     }
 
     notifyListeners();
@@ -755,6 +800,14 @@ class ClubwearProvider extends ChangeNotifier {
 
   void setAddress(String value) {
     _address = value.trim();
+
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid != null) {
+      _localDb.saveAddress(uid, _address).catchError((Object error) {
+        debugPrint('Gagal menyimpan alamat lokal: $error');
+      });
+    }
+
     notifyListeners();
   }
 
@@ -806,6 +859,13 @@ class ClubwearProvider extends ChangeNotifier {
       _orderSeq++;
       _orders.insert(0, order);
       _cart.clear();
+
+      try {
+        await _localDb.saveOrder(FirebaseAuth.instance.currentUser!.uid, order);
+        debugPrint('Pesanan ${order.id} tersimpan di SQLite');
+      } catch (e, st) {
+        debugPrint('Gagal menyimpan riwayat pesanan lokal: $e\n$st');
+      }
 
       notifyListeners();
       return order;
