@@ -35,12 +35,10 @@ class _AddProductPageState extends State<AddProductPage> {
     super.initState();
     final p = widget.product;
     _nameController = TextEditingController(text: p?.name ?? '');
-    _priceController =
-        TextEditingController(text: p?.price.toString() ?? '');
+    _priceController = TextEditingController(text: p?.price.toString() ?? '');
     _originalPriceController =
         TextEditingController(text: p?.originalPrice?.toString() ?? '');
-    _stockController =
-        TextEditingController(text: p?.stock.toString() ?? '20');
+    _stockController = TextEditingController(text: p?.stock.toString() ?? '20');
     _sizesController =
         TextEditingController(text: p?.sizes.join(', ') ?? 'S, M, L, XL');
     _imageController = TextEditingController(text: p?.image ?? '');
@@ -85,8 +83,7 @@ class _AddProductPageState extends State<AddProductPage> {
 
       final service = ProductFirestoreService();
       final price = int.tryParse(_priceController.text.trim()) ?? 0;
-      final originalPrice =
-      int.tryParse(_originalPriceController.text.trim());
+      final originalPrice = int.tryParse(_originalPriceController.text.trim());
       final stock = int.tryParse(_stockController.text.trim()) ?? 0;
 
       if (_isEditing) {
@@ -160,7 +157,7 @@ class _AddProductPageState extends State<AddProductPage> {
             ),
             const SizedBox(height: 14),
             DropdownButtonFormField<ProductCategory>(
-              value: _category,
+              initialValue: _category,
               decoration: InputDecoration(
                 labelText: 'Kategori',
                 filled: true,
@@ -176,14 +173,14 @@ class _AddProductPageState extends State<AddProductPage> {
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(16),
                   borderSide:
-                  const BorderSide(color: AppColors.gold, width: 1.6),
+                      const BorderSide(color: AppColors.gold, width: 1.6),
                 ),
               ),
               items: ProductCategory.values
                   .map((c) => DropdownMenuItem(
-                value: c,
-                child: Text(c.label),
-              ))
+                        value: c,
+                        child: Text(c.label),
+                      ))
                   .toList(),
               onChanged: (v) {
                 if (v != null) setState(() => _category = v);

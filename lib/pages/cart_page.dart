@@ -1,9 +1,9 @@
-
 import 'dart:math' as math;
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 
+import '../features/shipping/presentation/shipping_address_page.dart';
 import '../models/cart_item.dart';
 import '../models/product.dart';
 import '../providers/clubwear_provider.dart';
@@ -11,14 +11,28 @@ import '../widgets/common_widgets.dart';
 import '../widgets/product_card.dart';
 import 'profile_page.dart';
 
+// Membuka halaman pengaturan alamat pengiriman baru.
+Future<void> openShippingAddressPage(
+  BuildContext context,
+  ClubwearProvider provider,
+) async {
+  await Navigator.of(context).push<bool>(
+    MaterialPageRoute<bool>(
+      builder: (_) => ShippingAddressPage(
+        initialAddress: provider.address,
+      ),
+    ),
+  );
+}
+
 class CartPage extends StatelessWidget {
   const CartPage({super.key});
 
   // Memproses checkout dan menyimpan pesanan ke Firestore.
   Future<void> _checkout(
-      BuildContext context,
-      ClubwearProvider provider,
-      ) async {
+    BuildContext context,
+    ClubwearProvider provider,
+  ) async {
     if (!provider.hasAddress) {
       final fillNow = await showDialog<bool>(
         context: context,
@@ -30,7 +44,8 @@ class CartPage extends StatelessWidget {
           ),
           title: const Text('Alamat belum diisi'),
           content: const Text(
-            'Isi alamat pengiriman terlebih dahulu sebelum melakukan checkout.',
+            'Isi alamat pengiriman terlebih dahulu '
+            'sebelum melakukan checkout.',
             textAlign: TextAlign.center,
           ),
           actionsAlignment: MainAxisAlignment.center,
@@ -47,9 +62,12 @@ class CartPage extends StatelessWidget {
         ),
       );
 
-      if (fillNow == true && context.mounted) {
-        await showAddressDialog(context);
+      if (!context.mounted) return;
+
+      if (fillNow == true) {
+        await openShippingAddressPage(context, provider);
       }
+
       return;
     }
 
@@ -103,55 +121,53 @@ class CartPage extends StatelessWidget {
               Expanded(
                 child: items.isEmpty
                     ? EmptyState(
-                  icon: Icons.shopping_bag_outlined,
-                  title: 'Keranjangmu masih kosong',
-                  subtitle:
-                  'Yuk, temukan outfit favoritmu di Clubwear.',
-                  actionLabel: 'Mulai Belanja',
-                  onAction: () => provider.setTab(0),
-                )
+                        icon: Icons.shopping_bag_outlined,
+                        title: 'Keranjangmu masih kosong',
+                        subtitle: 'Yuk, temukan outfit favoritmu di Clubwear.',
+                        actionLabel: 'Mulai Belanja',
+                        onAction: () => provider.setTab(0),
+                      )
                     : ListView.separated(
-                  padding: const EdgeInsets.fromLTRB(
-                    16,
-                    18,
-                    16,
-                    16,
-                  ),
-                  itemCount: items.length + 1,
-                  separatorBuilder: (_, __) =>
-                  const SizedBox(height: 12),
-                  itemBuilder: (_, i) {
-                    if (i == 0) {
-                      return _ShippingProgress(
-                        provider: provider,
-                      );
-                    }
-
-                    final item = items[i - 1];
-
-                    return Dismissible(
-                      key: ValueKey(item.key),
-                      direction: DismissDirection.endToStart,
-                      onDismissed: (_) {
-                        provider.removeFromCart(item.key);
-                      },
-                      background: const SizedBox.shrink(),
-                      secondaryBackground: Container(
-                        alignment: Alignment.centerRight,
-                        padding: const EdgeInsets.only(right: 24),
-                        decoration: BoxDecoration(
-                          color: AppColors.accent,
-                          borderRadius: BorderRadius.circular(18),
+                        padding: const EdgeInsets.fromLTRB(
+                          16,
+                          18,
+                          16,
+                          16,
                         ),
-                        child: const Icon(
-                          Icons.delete_outline,
-                          color: Colors.white,
-                        ),
+                        itemCount: items.length + 1,
+                        separatorBuilder: (_, __) => const SizedBox(height: 12),
+                        itemBuilder: (_, i) {
+                          if (i == 0) {
+                            return _ShippingProgress(
+                              provider: provider,
+                            );
+                          }
+
+                          final item = items[i - 1];
+
+                          return Dismissible(
+                            key: ValueKey(item.key),
+                            direction: DismissDirection.endToStart,
+                            onDismissed: (_) {
+                              provider.removeFromCart(item.key);
+                            },
+                            background: const SizedBox.shrink(),
+                            secondaryBackground: Container(
+                              alignment: Alignment.centerRight,
+                              padding: const EdgeInsets.only(right: 24),
+                              decoration: BoxDecoration(
+                                color: AppColors.accent,
+                                borderRadius: BorderRadius.circular(18),
+                              ),
+                              child: const Icon(
+                                Icons.delete_outline,
+                                color: Colors.white,
+                              ),
+                            ),
+                            child: _CartItemTile(item: item),
+                          );
+                        },
                       ),
-                      child: _CartItemTile(item: item),
-                    );
-                  },
-                ),
               ),
               if (items.isNotEmpty)
                 _SummaryBar(
@@ -166,9 +182,14 @@ class CartPage extends StatelessWidget {
   }
 }
 
-// Widget progress gratis ongkir.
+// =======================================================
+// PROGRESS GRATIS ONGKIR
+// =======================================================
+
 class _ShippingProgress extends StatelessWidget {
-  const _ShippingProgress({required this.provider});
+  const _ShippingProgress({
+    required this.provider,
+  });
 
   final ClubwearProvider provider;
 
@@ -176,6 +197,7 @@ class _ShippingProgress extends StatelessWidget {
   Widget build(BuildContext context) {
     final remaining = provider.amountToFreeShipping;
     final unlocked = remaining == 0;
+
     final progress = math.min(
       1.0,
       provider.cartTotal / ClubwearProvider.freeShippingMin,
@@ -190,9 +212,7 @@ class _ShippingProgress extends StatelessWidget {
           Row(
             children: [
               Icon(
-                unlocked
-                    ? Icons.local_shipping
-                    : Icons.local_shipping_outlined,
+                unlocked ? Icons.local_shipping : Icons.local_shipping_outlined,
                 size: 20,
                 color: unlocked ? AppColors.primary : AppColors.gold,
               ),
@@ -201,7 +221,8 @@ class _ShippingProgress extends StatelessWidget {
                 child: Text(
                   unlocked
                       ? 'Selamat! Kamu dapat gratis ongkir.'
-                      : 'Belanja ${formatRupiah(remaining)} lagi untuk gratis ongkir.',
+                      : 'Belanja ${formatRupiah(remaining)} lagi '
+                          'untuk gratis ongkir.',
                   style: const TextStyle(
                     fontSize: 12.5,
                     fontWeight: FontWeight.w600,
@@ -226,9 +247,14 @@ class _ShippingProgress extends StatelessWidget {
   }
 }
 
-// Widget satu produk di keranjang.
+// =======================================================
+// ITEM PRODUK DI KERANJANG
+// =======================================================
+
 class _CartItemTile extends StatelessWidget {
-  const _CartItemTile({required this.item});
+  const _CartItemTile({
+    required this.item,
+  });
 
   final CartItem item;
 
@@ -246,7 +272,9 @@ class _CartItemTile extends StatelessWidget {
             child: SizedBox(
               width: 88,
               height: 104,
-              child: ProductImage(product: item.product),
+              child: ProductImage(
+                product: item.product,
+              ),
             ),
           ),
           const SizedBox(width: 12),
@@ -305,10 +333,8 @@ class _CartItemTile extends StatelessWidget {
                     QuantityStepper(
                       quantity: item.quantity,
                       maxQuantity: provider.maxQuantityFor(item.product),
-                      onIncrement: () =>
-                          provider.increaseQuantity(item.key),
-                      onDecrement: () =>
-                          provider.decreaseQuantity(item.key),
+                      onIncrement: () => provider.increaseQuantity(item.key),
+                      onDecrement: () => provider.decreaseQuantity(item.key),
                     ),
                     const Spacer(),
                     if (item.quantity > 1)
@@ -330,7 +356,10 @@ class _CartItemTile extends StatelessWidget {
   }
 }
 
-// Widget ringkasan belanja dan tombol checkout.
+// =======================================================
+// RINGKASAN BELANJA DAN CHECKOUT
+// =======================================================
+
 class _SummaryBar extends StatelessWidget {
   const _SummaryBar({
     required this.provider,
@@ -384,11 +413,17 @@ class _SummaryBar extends StatelessWidget {
       child: Column(
         mainAxisSize: MainAxisSize.min,
         children: [
+          // Alamat pengiriman
           InkWell(
-            onTap: () => showAddressDialog(context),
+            onTap: () => openShippingAddressPage(
+              context,
+              provider,
+            ),
             borderRadius: BorderRadius.circular(10),
             child: Padding(
-              padding: const EdgeInsets.symmetric(vertical: 6),
+              padding: const EdgeInsets.symmetric(
+                vertical: 6,
+              ),
               child: Row(
                 children: [
                   Icon(
@@ -396,9 +431,7 @@ class _SummaryBar extends StatelessWidget {
                         ? Icons.location_on_outlined
                         : Icons.warning_amber_rounded,
                     size: 18,
-                    color: hasAddress
-                        ? AppColors.primary
-                        : AppColors.accent,
+                    color: hasAddress ? AppColors.primary : AppColors.accent,
                   ),
                   const SizedBox(width: 8),
                   Expanded(
@@ -410,12 +443,10 @@ class _SummaryBar extends StatelessWidget {
                       overflow: TextOverflow.ellipsis,
                       style: TextStyle(
                         fontSize: 12.5,
-                        color: hasAddress
-                            ? AppColors.primary
-                            : AppColors.accent,
-                        fontWeight: hasAddress
-                            ? FontWeight.w400
-                            : FontWeight.w600,
+                        color:
+                            hasAddress ? AppColors.primary : AppColors.accent,
+                        fontWeight:
+                            hasAddress ? FontWeight.w400 : FontWeight.w600,
                       ),
                     ),
                   ),
@@ -431,17 +462,22 @@ class _SummaryBar extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 6),
+
+          // Subtotal
           _row(
             'Subtotal (${provider.cartCount} barang)',
             formatRupiah(provider.cartTotal),
           ),
+
+          // Ongkos kirim
           _row(
             'Ongkos kirim',
-            provider.shipping == 0
-                ? 'Gratis'
-                : formatRupiah(provider.shipping),
+            provider.shipping == 0 ? 'Gratis' : formatRupiah(provider.shipping),
           ),
+
           const SizedBox(height: 8),
+
+          // Total dan tombol checkout
           Row(
             children: [
               Column(
